@@ -2,6 +2,8 @@
     "files.associations": {
         "*.css": "css",
         "istream": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp"
     }
 }

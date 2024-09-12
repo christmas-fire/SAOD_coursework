@@ -8,6 +8,8 @@ struct Node {
     Node* next;
 };
 
+
+
 int main() {
 
     Node *first = new Node;
