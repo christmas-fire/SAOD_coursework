@@ -1,16 +1,6 @@
-/*
-    B = 2 (файл testBase2.dat);
-    C = 2 - по дням(!) pождения и ФИО, К = день pождения;
-    S = 3 Метод пpямого слияния
-    Файл базы данных загpужается в динамическую память в виде списка,
-    сортировка проводится с использованием очередей, затем, для проведения
-    быстрого поиска, по отсортированному списку строится индексный массив.
-    D = 3 Дерево оптимального поиска (приближеный алгоритм А1)
-    E = 3 Код Фано
-*/
-
 #include <iostream>
 #include <fstream>
+#include <iomanip>  // Для std::setw
 #include <cstring>
 #include <cstdlib>
 #include <string>
@@ -147,36 +137,47 @@ list* mergeSort(list* head) {
     return merge(left, right);
 }
 
-// Function to display a range of records
-void displayRecordsRange(list* head, int start, int end) {
+// Function to display a range of records in a table format
+void displayRecordsTable(list* head, int start, int end) {
     list* current = head;
     int count = 0;
 
+    // Skip records until the start point
     while (current && count < start) {
         current = current->next;
         ++count;
     }
 
+    // Display headers
+    cout << left << setw(5) << "No." 
+         << setw(30) << "Name"
+         << setw(15) << "Department"
+         << setw(25) << "Post"
+         << setw(15) << "Date of Birth" 
+         << endl;
+
+    cout << string(90, '-') << endl;  // Horizontal separator
+
     int displayed = 0;
     while (current && displayed < (end - start)) {
-        cout << "Record #" << (start + displayed + 1) << endl;
-        cout << "Name: " << current->data.name << endl;
-        cout << "Department: " << current->data.department << endl;
-        cout << "Post: " << current->data.post << endl;
-        cout << "Date of birth: " << current->data.date << endl;
-        cout << "-------------------------------" << endl;
+        cout << left << setw(5) << (start + displayed + 1) 
+             << setw(30) << current->data.name
+             << setw(15) << current->data.department
+             << setw(25) << current->data.post
+             << setw(15) << current->data.date 
+             << endl;
 
         current = current->next;
         ++displayed;
     }
 }
 
-// Function to display the next page of records
+// Function to display the next page of records in a table format
 void displayNextPage(list* head, int& currentPage, int& totalPages) {
     int start = currentPage * 20;
     int end = start + 20;
 
-    displayRecordsRange(head, start, end);
+    displayRecordsTable(head, start, end);
 
     // Calculate total number of pages
     int count = 0;
@@ -193,26 +194,15 @@ void displayNextPage(list* head, int& currentPage, int& totalPages) {
     }
 }
 
-// Function to search for a record by its number
-void searchRecordByNumber(list* head, int number) {
-    list* current = head;
-    int count = 1;
+// Function to search for a record by its number and show the full page containing it
+void searchRecordByNumberAndShowPage(list* head, int number) {
+    // Calculate the page number (each page contains 20 records)
+    int pageNumber = (number - 1) / 20;
+    int start = pageNumber * 20;
+    int end = start + 20;
 
-    while (current) {
-        if (count == number) {
-            cout << "Record #" << number << endl;
-            cout << "Name: " << current->data.name << endl;
-            cout << "Department: " << current->data.department << endl;
-            cout << "Post: " << current->data.post << endl;
-            cout << "Date of birth: " << current->data.date << endl;
-            cout << "-------------------------------" << endl;
-            return;
-        }
-        current = current->next;
-        ++count;
-    }
-
-    cout << "Record number " << number << " not found." << endl;
+    cout << "Record #" << number << " is on page #" << (pageNumber + 1) << "." << endl;
+    displayRecordsTable(head, start, end);
 }
 
 // Free memory of the list
@@ -248,8 +238,10 @@ int main() {
         cout << "1. Show next 20 records" << endl;
         cout << "2. Go to page (page number)" << endl;
         cout << "3. Search record by number" << endl;
-        cout << "4. Show original (unsorted) database" << endl;
-        cout << "5. Exit the program" << endl;
+        cout << "4. Search record by number and show full page" << endl;
+        cout << "5. Show original (unsorted) database" << endl;
+        cout << "6. Show sorted database" << endl;
+        cout << "7. Exit the program" << endl;
         cout << "Enter your choice: ";
 
         int choice;
@@ -281,16 +273,21 @@ int main() {
                 cout << "Enter record number to search: ";
                 int number;
                 cin >> number;
-                searchRecordByNumber(currentDatabase, number);
+                searchRecordByNumberAndShowPage(currentDatabase, number);
                 break;
             }
             case 4: {
+                cout << "Enter record number to search: ";
+                int number;
+                cin >> number;
+                searchRecordByNumberAndShowPage(currentDatabase, number);
+                break;
+            }
+            case 5: {
                 if (isSorted) {
                     cout << "Switching to original (unsorted) database." << endl;
-                    // Free the sorted database
-                    freeList(sortedDatabase);
-                    // Use original database
-                    currentDatabase = originalDatabase;
+                    freeList(currentDatabase); // Free the sorted database
+                    currentDatabase = copyList(originalDatabase); // Copy unsorted database
                     currentPage = 0;
                     isSorted = false;
                     displayNextPage(currentDatabase, currentPage, totalPages);
@@ -299,8 +296,21 @@ int main() {
                 }
                 break;
             }
-            case 5: {
-                // Free memory
+            case 6: {
+                if (!isSorted) {
+                    cout << "Switching to sorted database." << endl;
+                    freeList(currentDatabase); // Free the unsorted database
+                    currentDatabase = sortedDatabase;
+                    currentPage = 0;
+                    isSorted = true;
+                    displayNextPage(currentDatabase, currentPage, totalPages);
+                } else {
+                    cout << "You are already viewing the sorted database." << endl;
+                }
+                break;
+            }
+            case 7: {
+                cout << "Exiting program." << endl;
                 freeList(sortedDatabase);
                 freeList(originalDatabase);
                 return 0;
