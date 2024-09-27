@@ -237,7 +237,7 @@ int main() {
         cout << "Menu:" << endl;
         cout << "1. Show next 20 records" << endl;
         cout << "2. Go to page (page number)" << endl;
-        cout << "3. Search record by number" << endl;
+        // cout << "3. Search record by number" << endl;
         cout << "4. Search record by number and show full page" << endl;
         cout << "5. Show original (unsorted) database" << endl;
         cout << "6. Show sorted database" << endl;
@@ -269,13 +269,13 @@ int main() {
                 }
                 break;
             }
-            case 3: {
-                cout << "Enter record number to search: ";
-                int number;
-                cin >> number;
-                searchRecordByNumberAndShowPage(currentDatabase, number);
-                break;
-            }
+            // case 3: {
+            //     cout << "Enter record number to search: ";
+            //     int number;
+            //     cin >> number;
+            //     searchRecordByNumberAndShowPage(currentDatabase, number);
+            //     break;
+            // }
             case 4: {
                 cout << "Enter record number to search: ";
                 int number;
