@@ -149,6 +149,7 @@ void displayRecordsTable(list* head, int start, int end) {
     }
 
     // Display headers
+    cout << string(90, '-') << endl;  // Horizontal separator
     cout << left << setw(5) << "No." 
          << setw(30) << "Name"
          << setw(15) << "Department"
@@ -214,6 +215,27 @@ void freeList(list* head) {
     }
 }
 
+list* binarySearchByBirthday(list* head, const char* date) {
+    list* current = head;
+    list* resultsHead = nullptr;
+    list* resultsTail = nullptr;
+
+    while (current) {
+        if (strncmp(current->data.date, date, 2) == 0) {
+            list* newNode = new list{current->data, nullptr};
+            if (!resultsHead) {
+                resultsHead = newNode;
+            } else {
+                resultsTail->next = newNode;
+            }
+            resultsTail = newNode;
+        }
+        current = current->next;
+    }
+
+    return resultsHead; // Return the head of the found records
+}
+
 int main() {
     system("chcp 866 > nul");
 
@@ -234,14 +256,16 @@ int main() {
     displayNextPage(sortedDatabase, currentPage, totalPages);
 
     while (true) {
+        cout << string(90, '-') << endl;  // Horizontal separator
         cout << "Menu:" << endl;
         cout << "1. Show next 20 records" << endl;
         cout << "2. Go to page (page number)" << endl;
-        cout << "3. Search record by number" << endl;
+        // cout << "3. Search record by number" << endl;
         cout << "4. Search record by number and show full page" << endl;
         cout << "5. Show original (unsorted) database" << endl;
         cout << "6. Show sorted database" << endl;
         cout << "7. Exit the program" << endl;
+        cout << "8. Binary search" << endl;
         cout << "Enter your choice: ";
 
         int choice;
@@ -269,13 +293,13 @@ int main() {
                 }
                 break;
             }
-            case 3: {
-                cout << "Enter record number to search: ";
-                int number;
-                cin >> number;
-                searchRecordByNumberAndShowPage(currentDatabase, number);
-                break;
-            }
+            // case 3: {
+            //     cout << "Enter record number to search: ";
+            //     int number;
+            //     cin >> number;
+            //     searchRecordByNumberAndShowPage(currentDatabase, number);
+            //     break;
+            // }
             case 4: {
                 cout << "Enter record number to search: ";
                 int number;
@@ -314,6 +338,20 @@ int main() {
                 freeList(sortedDatabase);
                 freeList(originalDatabase);
                 return 0;
+            }
+            case 8: {
+                char target[2];
+                cout << "Enter date (dd): ";
+                cin >> target;
+                list* foundRecords = binarySearchByBirthday(sortedDatabase, target);
+                if (foundRecords) {
+                    currentPage = 0; // Reset to the first page
+                    displayNextPage(foundRecords, currentPage, totalPages);
+                } else {
+                    cout << "No records found with date of birth: " << target << endl;
+                }
+                freeList(foundRecords); // Free memory for found records
+                break;
             }
             default:
                 cout << "Invalid choice. Please try again." << endl;
