@@ -149,6 +149,7 @@ void displayRecordsTable(list* head, int start, int end) {
     }
 
     // Display headers
+    cout << string(90, '-') << endl;  // Horizontal separator
     cout << left << setw(5) << "No." 
          << setw(30) << "Name"
          << setw(15) << "Department"
@@ -214,6 +215,27 @@ void freeList(list* head) {
     }
 }
 
+list* binarySearchByBirthday(list* head, const char* date) {
+    list* current = head;
+    list* resultsHead = nullptr;
+    list* resultsTail = nullptr;
+
+    while (current) {
+        if (strncmp(current->data.date, date, 2) == 0) {
+            list* newNode = new list{current->data, nullptr};
+            if (!resultsHead) {
+                resultsHead = newNode;
+            } else {
+                resultsTail->next = newNode;
+            }
+            resultsTail = newNode;
+        }
+        current = current->next;
+    }
+
+    return resultsHead; // Return the head of the found records
+}
+
 int main() {
     system("chcp 866 > nul");
 
@@ -234,15 +256,18 @@ int main() {
     displayNextPage(sortedDatabase, currentPage, totalPages);
 
     while (true) {
+        cout << string(90, '-') << endl;  // Horizontal separator
         cout << "Menu:" << endl;
         cout << "1. Show next 20 records" << endl;
         cout << "2. Go to page (page number)" << endl;
         // cout << "3. Search record by number" << endl;
-        cout << "4. Search record by number and show full page" << endl;
-        cout << "5. Show original (unsorted) database" << endl;
-        cout << "6. Show sorted database" << endl;
+        cout << "3. Search record by number and show full page" << endl;
+        cout << "4. Show original (unsorted) database" << endl;
+        cout << "5. Show sorted database" << endl;
+        cout << "6. Binary search" << endl;
         cout << "7. Exit the program" << endl;
-        cout << "Enter your choice: ";
+        cout << string(90, '-') << endl;  // Horizontal separator
+        cout << "Enter your choice (1-7): ";
 
         int choice;
         cin >> choice;
@@ -276,14 +301,14 @@ int main() {
             //     searchRecordByNumberAndShowPage(currentDatabase, number);
             //     break;
             // }
-            case 4: {
+            case 3: {
                 cout << "Enter record number to search: ";
                 int number;
                 cin >> number;
                 searchRecordByNumberAndShowPage(currentDatabase, number);
                 break;
             }
-            case 5: {
+            case 4: {
                 if (isSorted) {
                     cout << "Switching to original (unsorted) database." << endl;
                     freeList(currentDatabase); // Free the sorted database
@@ -296,7 +321,7 @@ int main() {
                 }
                 break;
             }
-            case 6: {
+            case 5: {
                 if (!isSorted) {
                     cout << "Switching to sorted database." << endl;
                     freeList(currentDatabase); // Free the unsorted database
@@ -306,6 +331,69 @@ int main() {
                     displayNextPage(currentDatabase, currentPage, totalPages);
                 } else {
                     cout << "You are already viewing the sorted database." << endl;
+                }
+                break;
+            }
+            case 6: {
+                char target[2];
+                cout << "Enter date (dd): ";
+                cin >> target;
+                list* foundRecords = binarySearchByBirthday(sortedDatabase, target);
+                
+                if (foundRecords) {
+                    int foundCurrentPage = 0;
+                    int foundTotalPages = 0;
+                    
+                    // Отображаем первую страницу найденных записей
+                    displayNextPage(foundRecords, foundCurrentPage, foundTotalPages);
+                    
+                    // Меню для управления найденными записями
+                    while (true) {
+                        cout << string(90, '-') << endl;
+                        cout << "1. Show next 20 records" << endl;
+                        cout << "2. Go to page (page number)" << endl;
+                        cout << "3. Exit found records view" << endl;
+                        cout << "Enter your choice: ";
+                        
+                        int subChoice;
+                        cin >> subChoice;
+                        
+                        switch (subChoice) {
+                            case 1: {
+                                if (foundCurrentPage < foundTotalPages - 1) {
+                                    ++foundCurrentPage;
+                                    displayNextPage(foundRecords, foundCurrentPage, foundTotalPages);
+                                } else {
+                                    cout << "You are already on the last page." << endl;
+                                }
+                                break;
+                            }
+                            case 2: {
+                                cout << "Enter page number (1-" << foundTotalPages << "): ";
+                                int page;
+                                cin >> page;
+                                if (page >= 1 && page <= foundTotalPages) {
+                                    foundCurrentPage = page - 1;
+                                    displayNextPage(foundRecords, foundCurrentPage, foundTotalPages);
+                                } else {
+                                    cout << "Invalid page number." << endl;
+                                }
+                                break;
+                            }
+                            case 3: {
+                                freeList(foundRecords); // Освобождаем память для найденных записей
+                                goto exitFoundRecords;  // Выходим из меню просмотра найденных записей
+                            }
+                            default: {
+                                cout << "Invalid choice. Please try again." << endl;
+                                break;
+                            }
+                        }
+                    }
+                exitFoundRecords:
+                    break;
+                } else {
+                    cout << "No records found with date of birth: " << target << endl;
                 }
                 break;
             }
