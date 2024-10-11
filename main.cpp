@@ -30,7 +30,6 @@ list* loadDatabase(const char* filename) {
     list* head = nullptr;
     list* tail = nullptr;
 
-    // Load records from file
     record record;
     while (file.read(reinterpret_cast<char*>(&record), sizeof(record))) {
         list* newNode = new list{record, nullptr};
@@ -59,7 +58,6 @@ list* copyList(list* head) {
         newTail = newTail->next;
         current = current->next;
     }
-
     return newHead;
 }
 
@@ -77,7 +75,6 @@ bool parseDay(const char* dateStr, int& day) {
         cerr << "Error converting day from string: " << e.what() << endl;
         return false;
     }
-
     return true;
 }
 
@@ -95,7 +92,6 @@ bool compareRecords(const record& a, const record& b) {
     return strcmp(a.name, b.name) < 0;
 }
 
-// Function to merge two sorted lists
 list* merge(list* left, list* right) {
     list dummy;
     list* tail = &dummy;
@@ -115,7 +111,6 @@ list* merge(list* left, list* right) {
     return dummy.next;
 }
 
-// Recursive merge sort function
 list* mergeSort(list* head) {
     if (!head || !head->next) {
         return head;
@@ -206,7 +201,6 @@ void searchRecordByNumberAndShowPage(list* head, int number) {
     displayRecordsTable(head, start, end);
 }
 
-// Free memory of the list
 void freeList(list* head) {
     while (head) {
         list* temp = head;
@@ -232,14 +226,11 @@ list* binarySearchByBirthday(list* head, const char* date) {
         }
         current = current->next;
     }
-
     return resultsHead; // Return the head of the found records
 }
 
 int main() {
     system("chcp 866 > nul");
-
-    // Load database from file
     list* originalDatabase = loadDatabase("testBase2.dat");
     if (!originalDatabase) return 1;
 
@@ -260,7 +251,6 @@ int main() {
         cout << "Menu:" << endl;
         cout << "1. Show next 20 records" << endl;
         cout << "2. Go to page (page number)" << endl;
-        // cout << "3. Search record by number" << endl;
         cout << "3. Search record by number and show full page" << endl;
         cout << "4. Show original (unsorted) database" << endl;
         cout << "5. Show sorted database" << endl;
@@ -294,13 +284,6 @@ int main() {
                 }
                 break;
             }
-            // case 3: {
-            //     cout << "Enter record number to search: ";
-            //     int number;
-            //     cin >> number;
-            //     searchRecordByNumberAndShowPage(currentDatabase, number);
-            //     break;
-            // }
             case 3: {
                 cout << "Enter record number to search: ";
                 int number;
