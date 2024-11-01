@@ -4,6 +4,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <string>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -19,11 +21,92 @@ struct list {
     list* next;
 };
 
+struct TreeNode {
+    record data;
+    TreeNode* left;
+    TreeNode* right;
+};
+
+// Функция сравнения для сортировки записей по "весу" (здесь - по ФИО)
+bool compareByDepartment(const record& a, const record& b) {
+    return a.department < b.department; // Сравнение по department
+}
+
+
+// Функция построения дерева оптимального поиска по алгоритму А1
+TreeNode* buildOptimalSearchTree(vector<record>& records, int start, int end) {
+    if (start > end) return nullptr;
+
+    // Находим узел с наибольшим "весом" (здесь используем просто середину для приближенной оптимальности)
+    int mid = (start + end) / 2;
+    
+    TreeNode* node = new TreeNode{records[mid], nullptr, nullptr};
+    node->left = buildOptimalSearchTree(records, start, mid - 1);
+    node->right = buildOptimalSearchTree(records, mid + 1, end);
+    
+    return node;
+}
+
+// // Функция поиска узла по ФИО в дереве
+TreeNode* searchTreeByDepartment(TreeNode* root, unsigned short int dep) {
+    // Проверка на пустое поддерево
+    if (root == nullptr) {
+        return nullptr; // Если узел пустой, возвращаем nullptr
+    }
+    
+    // Сравнение значений
+    if (root->data.department > dep) {
+        return searchTreeByDepartment(root->left, dep); // Ищем в левом поддереве
+    } else if (root->data.department < dep) {
+        return searchTreeByDepartment(root->right, dep); // Ищем в правом поддереве
+    } else {
+        return root; // Возвращаем узел, если найдено совпадение
+    }
+    
+}
+
+void freeTree(TreeNode* root) {
+    if (!root) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    delete root;
+}
+
+// Функция для удаления лишних пробелов из строки
+void trimSpaces(char* str) {
+    if (!str) return;
+    // Удаляем начальные пробелы
+    while (std::isspace(static_cast<unsigned char>(*str))) {
+        ++str;
+    }
+    // Удаляем конечные пробелы
+    char* end = str + std::strlen(str) - 1;
+    while (end > str && std::isspace(static_cast<unsigned char>(*end))) {
+        --end;
+    }
+    // Устанавливаем нулевой терминатор после последнего ненулевого символа
+    *(end + 1) = '\0';
+    // Скопируем результат в оригинальное поле с удалением лишних пробелов
+    std::strncpy(str, str, 22); // Копируем до 30 символов
+}
+
+// Измененная функция linkedListToVector с удалением пробелов
+std::vector<record> linkedListToVector(list* head) {
+    std::vector<record> vec;
+    list* current = head;
+    while (current != nullptr) {
+        // Удаляем лишние пробелы из полей name перед добавлением в вектор
+        // trimSpaces(current->data.post);
+        vec.push_back(current->data);
+        current = current->next;
+    }
+    return vec;
+}
 // Function to load database from file into a linked list
 list* loadDatabase(const char* filename) {
     ifstream file(filename, ios::binary);
     if (!file) {
-        cerr << "Error opening file '" << filename << "'!" << endl;
+        cerr << "Error: Can't opening file '" << filename << "'!" << endl;
         return nullptr;
     }
 
@@ -72,7 +155,7 @@ bool parseDay(const char* dateStr, int& day) {
     try {
         day = std::stoi(dayStr);
     } catch (std::exception& e) {
-        cerr << "Error converting day from string: " << e.what() << endl;
+        cerr << "Error: Сonverting day from string: " << e.what() << endl;
         return false;
     }
     return true;
@@ -168,6 +251,62 @@ void displayRecordsTable(list* head, int start, int end) {
     }
 }
 
+void displayRecord(TreeNode* node) {
+    if (node) {
+        cout << string(90, '-') << endl;
+        cout << left << setw(30) << "Name"
+             << setw(15) << "Department"
+             << setw(25) << "Post"
+             << setw(15) << "Date of Birth" 
+             << endl;
+        cout << string(90, '-') << endl;
+        cout << left << setw(30) << node->data.name
+             << setw(15) << node->data.department
+             << setw(25) << node->data.post
+             << setw(15) << node->data.date 
+             << endl;
+    } else {
+        cout << "Record not found." << endl;
+    }
+}
+
+void findAllRecordsByDepartment(TreeNode* root, unsigned short int dep, vector<TreeNode*>& results) {
+    if (root == nullptr) {
+        return; // Если узел пустой, просто выходим
+    }
+
+    // Если текущий узел соответствует номеру отдела, добавляем его в результаты
+    if (root->data.department == dep) {
+        results.push_back(root); // Сохраняем узел в вектор результатов
+    }
+
+    // Рекурсивно ищем в левом и правом поддереве
+    findAllRecordsByDepartment(root->left, dep, results);
+    findAllRecordsByDepartment(root->right, dep, results);
+}
+
+// Функция для вывода дерева (симметричный обход)
+void printTree(TreeNode* root, int depth = 0) {
+    if (!root) return;
+
+    printTree(root->left, depth + 1);
+    // cout << string(depth * 4, ' ') << root->data.department << endl;
+        // cout << string(90, '-') << endl;
+        // cout << left << setw(30) << "Name"
+        //      << setw(15) << "Department"
+        //      << setw(25) << "Post"
+        //      << setw(15) << "Date of Birth" 
+        //      << endl;
+        // cout << string(90, '-') << endl;
+        // cout << left << setw(30) << root->data.name
+        //      << setw(15) << root->data.department
+        //      << setw(25) << root->data.post
+        //      << setw(15) << root->data.date 
+        //      << endl;
+    displayRecord(root);
+    printTree(root->right, depth + 1);
+}
+
 // Function to display the next page of records in a table format
 void displayNextPage(list* head, int& currentPage, int& totalPages) {
     int start = currentPage * 20;
@@ -192,7 +331,6 @@ void displayNextPage(list* head, int& currentPage, int& totalPages) {
 
 // Function to search for a record by its number and show the full page containing it
 void searchRecordByNumberAndShowPage(list* head, int number) {
-    // Calculate the page number (each page contains 20 records)
     int pageNumber = (number - 1) / 20;
     int start = pageNumber * 20;
     int end = start + 20;
@@ -226,7 +364,17 @@ list* binarySearchByBirthday(list* head, const char* date) {
         }
         current = current->next;
     }
-    return resultsHead; // Return the head of the found records
+    return resultsHead;
+}
+// Функция для вычисления длины списка
+int getListLength(list* head) {
+    int length = 0;
+    list* current = head;
+    while (current) {
+        length++;
+        current = current->next;
+    }
+    return length;
 }
 
 int main() {
@@ -322,6 +470,9 @@ int main() {
                 cout << "Enter date (dd): ";
                 cin >> target;
                 list* foundRecords = binarySearchByBirthday(sortedDatabase, target);
+                vector<record> vec = linkedListToVector(foundRecords);
+                std::sort(vec.begin(), vec.end(), compareByDepartment);
+                TreeNode* root = buildOptimalSearchTree(vec, 0, vec.size() - 1);
                 
                 if (foundRecords) {
                     int foundCurrentPage = 0;
@@ -335,7 +486,9 @@ int main() {
                         cout << string(90, '-') << endl;
                         cout << "1. Show next 20 records" << endl;
                         cout << "2. Go to page (page number)" << endl;
-                        cout << "3. Exit found records view" << endl;
+                        cout << "3. Search department in tree" << endl;
+                        cout << "4. Output tree" << endl;
+                        cout << "5. Exit found records view" << endl;
                         cout << "Enter your choice: ";
                         
                         int subChoice;
@@ -364,6 +517,41 @@ int main() {
                                 break;
                             }
                             case 3: {
+                                if (root) {
+                                    unsigned short int dep;
+
+                                    cout << "Enter department: ";
+                                    cin.ignore();
+                                    cin >> dep;
+                                    
+                                    TreeNode* foundNode = searchTreeByDepartment(root, dep); // Передаем root как аргумент
+                                    vector<TreeNode*> results; // Вектор для хранения найденных узлов
+                                    findAllRecordsByDepartment(root, dep, results); // Ищем все записи по номеру отдела
+
+                                    // Проверяем, были ли найдены какие-либо записи
+                                    if (!results.empty()) {
+                                        cout << "Records found for department " << dep << ":" << endl;
+                                        for (TreeNode* node : results) {
+                                            displayRecord(node); // Отображаем каждую найденную запись
+                                        }
+                                    } else {
+                                        cout << "No records found for department " << dep << "." << endl; // Если записи не найдены
+                                    }
+                                    
+                                    break;
+                                } else {
+                                    cerr << "Error: Root of DOP isn't found." << endl;
+                                    break;
+                                }
+
+
+                            }
+                            case 4: {
+                                printTree(root);
+                                // displayRecord(root);
+                                break;
+                            }
+                            case 5: {
                                 freeList(foundRecords); // Освобождаем память для найденных записей
                                 goto exitFoundRecords;  // Выходим из меню просмотра найденных записей
                             }

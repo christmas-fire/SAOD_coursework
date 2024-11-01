@@ -28,9 +28,10 @@ struct TreeNode {
 };
 
 // Функция сравнения для сортировки записей по "весу" (здесь - по ФИО)
-bool compareByName(const record& a, const record& b) {
-    return strncmp(a.name, b.name, 30) < 0;
+bool compareByDepartment(const record& a, const record& b) {
+    return a.department < b.department; // Сравнение по department
 }
+
 
 // Функция построения дерева оптимального поиска по алгоритму А1
 TreeNode* buildOptimalSearchTree(vector<record>& records, int start, int end) {
@@ -47,28 +48,21 @@ TreeNode* buildOptimalSearchTree(vector<record>& records, int start, int end) {
 }
 
 // // Функция поиска узла по ФИО в дереве
-TreeNode* searchTreeByName(TreeNode* root, const char* name) {
-    if (!root) {
-        cerr << "Error: Root of DOP isn't found" << endl;
-        return nullptr;  // Изменил на nullptr для более точного контроля ошибок
+TreeNode* searchTreeByDepartment(TreeNode* root, unsigned short int dep) {
+    // Проверка на пустое поддерево
+    if (root == nullptr) {
+        return nullptr; // Если узел пустой, возвращаем nullptr
     }
-    int cmp = strncmp(name, root->data.name, 30);
-    if (cmp == 0) {
-        return root;
-    } else if (cmp < 0) {
-        return searchTreeByName(root->left, name);
+    
+    // Сравнение значений
+    if (root->data.department > dep) {
+        return searchTreeByDepartment(root->left, dep); // Ищем в левом поддереве
+    } else if (root->data.department < dep) {
+        return searchTreeByDepartment(root->right, dep); // Ищем в правом поддереве
     } else {
-        return searchTreeByName(root->right, name);
+        return root; // Возвращаем узел, если найдено совпадение
     }
-}
-
-// Функция для вывода дерева (симметричный обход)
-void printTree(TreeNode* root, int depth = 0) {
-    if (!root) return;
-
-    printTree(root->left, depth + 1);
-    cout << string(depth * 4, ' ') << root->data.name << endl;
-    printTree(root->right, depth + 1);
+    
 }
 
 void freeTree(TreeNode* root) {
@@ -93,7 +87,7 @@ void trimSpaces(char* str) {
     // Устанавливаем нулевой терминатор после последнего ненулевого символа
     *(end + 1) = '\0';
     // Скопируем результат в оригинальное поле с удалением лишних пробелов
-    std::strncpy(str, str, 30); // Копируем до 30 символов
+    std::strncpy(str, str, 22); // Копируем до 30 символов
 }
 
 // Измененная функция linkedListToVector с удалением пробелов
@@ -102,7 +96,7 @@ std::vector<record> linkedListToVector(list* head) {
     list* current = head;
     while (current != nullptr) {
         // Удаляем лишние пробелы из полей name перед добавлением в вектор
-        trimSpaces(current->data.name);
+        // trimSpaces(current->data.post);
         vec.push_back(current->data);
         current = current->next;
     }
@@ -276,6 +270,43 @@ void displayRecord(TreeNode* node) {
     }
 }
 
+void findAllRecordsByDepartment(TreeNode* root, unsigned short int dep, vector<TreeNode*>& results) {
+    if (root == nullptr) {
+        return; // Если узел пустой, просто выходим
+    }
+
+    // Если текущий узел соответствует номеру отдела, добавляем его в результаты
+    if (root->data.department == dep) {
+        results.push_back(root); // Сохраняем узел в вектор результатов
+    }
+
+    // Рекурсивно ищем в левом и правом поддереве
+    findAllRecordsByDepartment(root->left, dep, results);
+    findAllRecordsByDepartment(root->right, dep, results);
+}
+
+// Функция для вывода дерева (симметричный обход)
+void printTree(TreeNode* root, int depth = 0) {
+    if (!root) return;
+
+    printTree(root->left, depth + 1);
+    // cout << string(depth * 4, ' ') << root->data.department << endl;
+        // cout << string(90, '-') << endl;
+        // cout << left << setw(30) << "Name"
+        //      << setw(15) << "Department"
+        //      << setw(25) << "Post"
+        //      << setw(15) << "Date of Birth" 
+        //      << endl;
+        // cout << string(90, '-') << endl;
+        // cout << left << setw(30) << root->data.name
+        //      << setw(15) << root->data.department
+        //      << setw(25) << root->data.post
+        //      << setw(15) << root->data.date 
+        //      << endl;
+    displayRecord(root);
+    printTree(root->right, depth + 1);
+}
+
 // Function to display the next page of records in a table format
 void displayNextPage(list* head, int& currentPage, int& totalPages) {
     int start = currentPage * 20;
@@ -316,25 +347,25 @@ void freeList(list* head) {
     }
 }
 
-// list* binarySearchByBirthday(list* head, const char* date) {
-//     list* current = head;
-//     list* resultsHead = nullptr;
-//     list* resultsTail = nullptr;
+list* binarySearchByBirthday(list* head, const char* date) {
+    list* current = head;
+    list* resultsHead = nullptr;
+    list* resultsTail = nullptr;
 
-//     while (current) {
-//         if (strncmp(current->data.date, date, 2) == 0) {
-//             list* newNode = new list{current->data, nullptr};
-//             if (!resultsHead) {
-//                 resultsHead = newNode;
-//             } else {
-//                 resultsTail->next = newNode;
-//             }
-//             resultsTail = newNode;
-//         }
-//         current = current->next;
-//     }
-//     return resultsHead;
-// }
+    while (current) {
+        if (strncmp(current->data.date, date, 2) == 0) {
+            list* newNode = new list{current->data, nullptr};
+            if (!resultsHead) {
+                resultsHead = newNode;
+            } else {
+                resultsTail->next = newNode;
+            }
+            resultsTail = newNode;
+        }
+        current = current->next;
+    }
+    return resultsHead;
+}
 // Функция для вычисления длины списка
 int getListLength(list* head) {
     int length = 0;
@@ -344,89 +375,6 @@ int getListLength(list* head) {
         current = current->next;
     }
     return length;
-}
-
-// Бинарный поиск по дате в связанном списке
-list* binarySearchByBirthday(list* head, const char* date) {
-    int length = getListLength(head);
-    list* resultsHead = nullptr;
-    list* resultsTail = nullptr;
-
-    int left = 0;
-    int right = length - 1;
-
-    while (left <= right) {
-        int mid = left + (right - left) / 2; // Находим средний индекс
-        list* current = head;
-
-        // Итерируем до середины списка
-        for (int i = 0; i < mid; ++i) {
-            current = current->next;
-        }
-
-        // Сравниваем дату в средней позиции со значением date
-        if (strncmp(current->data.date, date, 2) == 0) {
-            // Если совпадение, добавляем в результаты
-            list* newNode = new list{current->data, nullptr};
-            if (!resultsHead) {
-                resultsHead = newNode;
-            } else {
-                resultsTail->next = newNode;
-            }
-            resultsTail = newNode;
-
-            // Теперь ищем в обе стороны, чтобы найти все совпадения
-            // Влево
-            int tempIndex = mid - 1;
-            while (tempIndex >= left) {
-                current = head;
-                for (int i = 0; i < tempIndex; ++i) {
-                    current = current->next;
-                }
-                if (strncmp(current->data.date, date, 2) == 0) {
-                    list* newNode = new list{current->data, nullptr};
-                    if (!resultsHead) {
-                        resultsHead = newNode;
-                    } else {
-                        resultsTail->next = newNode;
-                    }
-                    resultsTail = newNode;
-                } else {
-                    break; // Выход из цикла, если нет совпадений
-                }
-                tempIndex--;
-            }
-
-            // Вправо
-            tempIndex = mid + 1;
-            while (tempIndex <= right) {
-                current = head;
-                for (int i = 0; i < tempIndex; ++i) {
-                    current = current->next;
-                }
-                if (strncmp(current->data.date, date, 2) == 0) {
-                    list* newNode = new list{current->data, nullptr};
-                    if (!resultsHead) {
-                        resultsHead = newNode;
-                    } else {
-                        resultsTail->next = newNode;
-                    }
-                    resultsTail = newNode;
-                } else {
-                    break; // Выход из цикла, если нет совпадений
-                }
-                tempIndex++;
-            }
-
-            return resultsHead; // Возвращаем результат, если нашли совпадение
-        } else if (strncmp(current->data.date, date, 2) < 0) {
-            left = mid + 1; // Ищем в правой половине
-        } else {
-            right = mid - 1; // Ищем в левой половине
-        }
-    }
-
-    return resultsHead; // Если ничего не найдено, вернём пустой список
 }
 
 int main() {
@@ -523,8 +471,8 @@ int main() {
                 cin >> target;
                 list* foundRecords = binarySearchByBirthday(sortedDatabase, target);
                 vector<record> vec = linkedListToVector(foundRecords);
-                sort(vec.begin(), vec.end(), compareByName);
-                TreeNode* root = buildOptimalSearchTree(vec, 0, vec.size());
+                std::sort(vec.begin(), vec.end(), compareByDepartment);
+                TreeNode* root = buildOptimalSearchTree(vec, 0, vec.size() - 1);
                 
                 if (foundRecords) {
                     int foundCurrentPage = 0;
@@ -538,8 +486,9 @@ int main() {
                         cout << string(90, '-') << endl;
                         cout << "1. Show next 20 records" << endl;
                         cout << "2. Go to page (page number)" << endl;
-                        cout << "3. Search name in tree" << endl;
-                        cout << "4. Exit found records view" << endl;
+                        cout << "3. Search department in tree" << endl;
+                        cout << "4. Output tree" << endl;
+                        cout << "5. Exit found records view" << endl;
                         cout << "Enter your choice: ";
                         
                         int subChoice;
@@ -569,22 +518,40 @@ int main() {
                             }
                             case 3: {
                                 if (root) {
-                                    // printTree(root);
+                                    unsigned short int dep;
 
-                                    char name[30];
-                                    cout << "Enter full name: ";
-                                    cin.ignore(); // Clear the buffer
-                                    cin.getline(name, sizeof(name)); // Get the full name
+                                    cout << "Enter department: ";
+                                    cin.ignore();
+                                    cin >> dep;
                                     
-                                    TreeNode* foundNode = searchTreeByName(root, name); // Передаем root как аргумент
-                                    displayRecord(foundNode); // Display found node
+                                    TreeNode* foundNode = searchTreeByDepartment(root, dep); // Передаем root как аргумент
+                                    vector<TreeNode*> results; // Вектор для хранения найденных узлов
+                                    findAllRecordsByDepartment(root, dep, results); // Ищем все записи по номеру отдела
+
+                                    // Проверяем, были ли найдены какие-либо записи
+                                    if (!results.empty()) {
+                                        cout << "Records found for department " << dep << ":" << endl;
+                                        for (TreeNode* node : results) {
+                                            displayRecord(node); // Отображаем каждую найденную запись
+                                        }
+                                    } else {
+                                        cout << "No records found for department " << dep << "." << endl; // Если записи не найдены
+                                    }
+                                    
                                     break;
                                 } else {
                                     cerr << "Error: Root of DOP isn't found." << endl;
                                     break;
                                 }
+
+
                             }
                             case 4: {
+                                printTree(root);
+                                // displayRecord(root);
+                                break;
+                            }
+                            case 5: {
                                 freeList(foundRecords); // Освобождаем память для найденных записей
                                 goto exitFoundRecords;  // Выходим из меню просмотра найденных записей
                             }
