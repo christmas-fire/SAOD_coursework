@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <iomanip>  // Для std::setw
+#include <iomanip>
 #include <cstring>
 #include <cstdlib>
 #include <string>
@@ -27,11 +27,10 @@ struct TreeNode {
     TreeNode* right;
 };
 
-// Функция сравнения для сортировки записей по "весу" (здесь - по ФИО)
+// Функция сравнения для сортировки записей
 bool compareByDepartment(const record& a, const record& b) {
     return a.department < b.department; // Сравнение по department
 }
-
 
 // Функция построения дерева оптимального поиска по алгоритму А1
 TreeNode* buildOptimalSearchTree(vector<record>& records, int start, int end) {
@@ -47,22 +46,18 @@ TreeNode* buildOptimalSearchTree(vector<record>& records, int start, int end) {
     return node;
 }
 
-// // Функция поиска узла по ФИО в дереве
 TreeNode* searchTreeByDepartment(TreeNode* root, unsigned short int dep) {
-    // Проверка на пустое поддерево
     if (root == nullptr) {
-        return nullptr; // Если узел пустой, возвращаем nullptr
+        return nullptr;
     }
     
-    // Сравнение значений
     if (root->data.department > dep) {
-        return searchTreeByDepartment(root->left, dep); // Ищем в левом поддереве
+        return searchTreeByDepartment(root->left, dep);
     } else if (root->data.department < dep) {
-        return searchTreeByDepartment(root->right, dep); // Ищем в правом поддереве
+        return searchTreeByDepartment(root->right, dep);
     } else {
-        return root; // Возвращаем узел, если найдено совпадение
+        return root;
     }
-    
 }
 
 void freeTree(TreeNode* root) {
@@ -72,37 +67,16 @@ void freeTree(TreeNode* root) {
     delete root;
 }
 
-// Функция для удаления лишних пробелов из строки
-void trimSpaces(char* str) {
-    if (!str) return;
-    // Удаляем начальные пробелы
-    while (std::isspace(static_cast<unsigned char>(*str))) {
-        ++str;
-    }
-    // Удаляем конечные пробелы
-    char* end = str + std::strlen(str) - 1;
-    while (end > str && std::isspace(static_cast<unsigned char>(*end))) {
-        --end;
-    }
-    // Устанавливаем нулевой терминатор после последнего ненулевого символа
-    *(end + 1) = '\0';
-    // Скопируем результат в оригинальное поле с удалением лишних пробелов
-    std::strncpy(str, str, 22); // Копируем до 30 символов
-}
-
-// Измененная функция linkedListToVector с удалением пробелов
 std::vector<record> linkedListToVector(list* head) {
     std::vector<record> vec;
     list* current = head;
     while (current != nullptr) {
-        // Удаляем лишние пробелы из полей name перед добавлением в вектор
-        // trimSpaces(current->data.post);
         vec.push_back(current->data);
         current = current->next;
     }
     return vec;
 }
-// Function to load database from file into a linked list
+
 list* loadDatabase(const char* filename) {
     ifstream file(filename, ios::binary);
     if (!file) {
@@ -128,7 +102,6 @@ list* loadDatabase(const char* filename) {
     return head;
 }
 
-// Function to deep copy a list
 list* copyList(list* head) {
     if (!head) return nullptr;
 
@@ -144,7 +117,6 @@ list* copyList(list* head) {
     return newHead;
 }
 
-// Helper function to extract the day from the date string
 bool parseDay(const char* dateStr, int& day) {
     if (strlen(dateStr) < 2) {
         cerr << "Error: Invalid date format '" << dateStr << "'" << endl;
@@ -215,19 +187,17 @@ list* mergeSort(list* head) {
     return merge(left, right);
 }
 
-// Function to display a range of records in a table format
 void displayRecordsTable(list* head, int start, int end) {
     list* current = head;
     int count = 0;
 
-    // Skip records until the start point
     while (current && count < start) {
         current = current->next;
         ++count;
     }
 
     // Display headers
-    cout << string(90, '-') << endl;  // Horizontal separator
+    cout << string(90, '-') << endl;
     cout << left << setw(5) << "No." 
          << setw(30) << "Name"
          << setw(15) << "Department"
@@ -235,7 +205,7 @@ void displayRecordsTable(list* head, int start, int end) {
          << setw(15) << "Date of Birth" 
          << endl;
 
-    cout << string(90, '-') << endl;  // Horizontal separator
+    cout << string(90, '-') << endl;
 
     int displayed = 0;
     while (current && displayed < (end - start)) {
@@ -253,13 +223,6 @@ void displayRecordsTable(list* head, int start, int end) {
 
 void displayRecord(TreeNode* node) {
     if (node) {
-        cout << string(90, '-') << endl;
-        cout << left << setw(30) << "Name"
-             << setw(15) << "Department"
-             << setw(25) << "Post"
-             << setw(15) << "Date of Birth" 
-             << endl;
-        cout << string(90, '-') << endl;
         cout << left << setw(30) << node->data.name
              << setw(15) << node->data.department
              << setw(25) << node->data.post
@@ -272,49 +235,23 @@ void displayRecord(TreeNode* node) {
 
 void findAllRecordsByDepartment(TreeNode* root, unsigned short int dep, vector<TreeNode*>& results) {
     if (root == nullptr) {
-        return; // Если узел пустой, просто выходим
+        return;
     }
 
-    // Если текущий узел соответствует номеру отдела, добавляем его в результаты
     if (root->data.department == dep) {
-        results.push_back(root); // Сохраняем узел в вектор результатов
+        results.push_back(root);
     }
 
-    // Рекурсивно ищем в левом и правом поддереве
     findAllRecordsByDepartment(root->left, dep, results);
     findAllRecordsByDepartment(root->right, dep, results);
 }
 
-// Функция для вывода дерева (симметричный обход)
-void printTree(TreeNode* root, int depth = 0) {
-    if (!root) return;
-
-    printTree(root->left, depth + 1);
-    // cout << string(depth * 4, ' ') << root->data.department << endl;
-        // cout << string(90, '-') << endl;
-        // cout << left << setw(30) << "Name"
-        //      << setw(15) << "Department"
-        //      << setw(25) << "Post"
-        //      << setw(15) << "Date of Birth" 
-        //      << endl;
-        // cout << string(90, '-') << endl;
-        // cout << left << setw(30) << root->data.name
-        //      << setw(15) << root->data.department
-        //      << setw(25) << root->data.post
-        //      << setw(15) << root->data.date 
-        //      << endl;
-    displayRecord(root);
-    printTree(root->right, depth + 1);
-}
-
-// Function to display the next page of records in a table format
 void displayNextPage(list* head, int& currentPage, int& totalPages) {
     int start = currentPage * 20;
     int end = start + 20;
 
     displayRecordsTable(head, start, end);
 
-    // Calculate total number of pages
     int count = 0;
     list* temp = head;
     while (temp) {
@@ -329,7 +266,6 @@ void displayNextPage(list* head, int& currentPage, int& totalPages) {
     }
 }
 
-// Function to search for a record by its number and show the full page containing it
 void searchRecordByNumberAndShowPage(list* head, int number) {
     int pageNumber = (number - 1) / 20;
     int start = pageNumber * 20;
@@ -366,7 +302,7 @@ list* binarySearchByBirthday(list* head, const char* date) {
     }
     return resultsHead;
 }
-// Функция для вычисления длины списка
+
 int getListLength(list* head) {
     int length = 0;
     list* current = head;
@@ -377,12 +313,39 @@ int getListLength(list* head) {
     return length;
 }
 
+void displayTreeNode(const TreeNode* node) {
+    if (node) {
+        cout << left << setw(30) << node->data.name
+             << setw(15) << node->data.department
+             << setw(25) << node->data.post
+             << setw(15) << node->data.date
+             << endl;
+    }
+}
+
+void displayTableHeader() {
+    cout << string(90, '-') << endl;
+    cout << left << setw(30) << "Name"
+         << setw(15) << "Department"
+         << setw(25) << "Post"
+         << setw(15) << "Date of Birth"
+         << endl;
+    cout << string(90, '-') << endl;
+}
+
+void printTreeWithTable(TreeNode* root) {
+    if (!root) return;
+
+    printTreeWithTable(root->left);
+    displayTreeNode(root);
+    printTreeWithTable(root->right);
+}
+
 int main() {
     system("chcp 866 > nul");
     list* originalDatabase = loadDatabase("testBase2.dat");
     if (!originalDatabase) return 1;
 
-    // Create a copy of the original database for sorting
     list* copyOfOriginal = copyList(originalDatabase);
     list* sortedDatabase = mergeSort(copyOfOriginal);
     list* currentDatabase = sortedDatabase;
@@ -391,11 +354,10 @@ int main() {
     int totalPages = 0;
     bool isSorted = true;
 
-    // Display the first page of the sorted database
     displayNextPage(sortedDatabase, currentPage, totalPages);
 
     while (true) {
-        cout << string(90, '-') << endl;  // Horizontal separator
+        cout << string(90, '-') << endl;
         cout << "Menu:" << endl;
         cout << "1. Show next 20 records" << endl;
         cout << "2. Go to page (page number)" << endl;
@@ -404,7 +366,7 @@ int main() {
         cout << "5. Show sorted database" << endl;
         cout << "6. Binary search" << endl;
         cout << "7. Exit the program" << endl;
-        cout << string(90, '-') << endl;  // Horizontal separator
+        cout << string(90, '-') << endl;
         cout << "Enter your choice (1-7): ";
 
         int choice;
@@ -442,8 +404,8 @@ int main() {
             case 4: {
                 if (isSorted) {
                     cout << "Switching to original (unsorted) database." << endl;
-                    freeList(currentDatabase); // Free the sorted database
-                    currentDatabase = copyList(originalDatabase); // Copy unsorted database
+                    freeList(currentDatabase);
+                    currentDatabase = copyList(originalDatabase);
                     currentPage = 0;
                     isSorted = false;
                     displayNextPage(currentDatabase, currentPage, totalPages);
@@ -455,7 +417,7 @@ int main() {
             case 5: {
                 if (!isSorted) {
                     cout << "Switching to sorted database." << endl;
-                    freeList(currentDatabase); // Free the unsorted database
+                    freeList(currentDatabase);
                     currentDatabase = sortedDatabase;
                     currentPage = 0;
                     isSorted = true;
@@ -478,10 +440,8 @@ int main() {
                     int foundCurrentPage = 0;
                     int foundTotalPages = 0;
                     
-                    // Отображаем первую страницу найденных записей
                     displayNextPage(foundRecords, foundCurrentPage, foundTotalPages);
                     
-                    // Меню для управления найденными записями
                     while (true) {
                         cout << string(90, '-') << endl;
                         cout << "1. Show next 20 records" << endl;
@@ -524,20 +484,18 @@ int main() {
                                     cin.ignore();
                                     cin >> dep;
                                     
-                                    TreeNode* foundNode = searchTreeByDepartment(root, dep); // Передаем root как аргумент
-                                    vector<TreeNode*> results; // Вектор для хранения найденных узлов
-                                    findAllRecordsByDepartment(root, dep, results); // Ищем все записи по номеру отдела
+                                    TreeNode* foundNode = searchTreeByDepartment(root, dep);
+                                    vector<TreeNode*> results;
+                                    findAllRecordsByDepartment(root, dep, results);
 
-                                    // Проверяем, были ли найдены какие-либо записи
                                     if (!results.empty()) {
-                                        cout << "Records found for department " << dep << ":" << endl;
+                                        displayTableHeader();
                                         for (TreeNode* node : results) {
-                                            displayRecord(node); // Отображаем каждую найденную запись
+                                            displayRecord(node);
                                         }
                                     } else {
-                                        cout << "No records found for department " << dep << "." << endl; // Если записи не найдены
+                                        cout << "No records found for department " << dep << "." << endl;
                                     }
-                                    
                                     break;
                                 } else {
                                     cerr << "Error: Root of DOP isn't found." << endl;
@@ -547,13 +505,18 @@ int main() {
 
                             }
                             case 4: {
-                                printTree(root);
-                                // displayRecord(root);
+                                if (root) {
+                                    cout << "Displaying tree in table format:" << endl;
+                                    displayTableHeader();
+                                    printTreeWithTable(root);
+                                } else {
+                                    cout << "Tree is empty." << endl;
+                                }
                                 break;
                             }
                             case 5: {
-                                freeList(foundRecords); // Освобождаем память для найденных записей
-                                goto exitFoundRecords;  // Выходим из меню просмотра найденных записей
+                                freeList(foundRecords);
+                                goto exitFoundRecords;
                             }
                             default: {
                                 cout << "Invalid choice. Please try again." << endl;
