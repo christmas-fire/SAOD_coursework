@@ -76,8 +76,8 @@ void freeTree(TreeNode* root) {
     delete root;
 }
 
-std::vector<record> linkedListToVector(list* head) {
-    std::vector<record> vec;
+vector<record> linkedListToVector(list* head) {
+    vector<record> vec;
     list* current = head;
     while (current != nullptr) {
         vec.push_back(current->data);
@@ -132,10 +132,10 @@ bool parseDay(const char* dateStr, int& day) {
         return false;
     }
 
-    std::string dayStr(dateStr, 2);
+    string dayStr(dateStr, 2);
     try {
-        day = std::stoi(dayStr);
-    } catch (std::exception& e) {
+        day = stoi(dayStr);
+    } catch (exception& e) {
         cerr << "Error: Сonverting day from string: " << e.what() << endl;
         return false;
     }
@@ -350,58 +350,58 @@ void printTreeWithTable(TreeNode* root) {
 }
 
 void printTableSymbols(coding *code, int numSymbols) {
-  std::cout << "+" << std::string(11, '-') << "+"
-            << std::string(18, '-') << "+"
-            << std::string(26, '-') << "+"
-            << std::string(26, '-') << "+"
-            << std::string(32, '-') << "+" << "\n";
+    cout << "+" << string(11, '-') << "+"
+            << string(18, '-') << "+"
+            << string(26, '-') << "+"
+            << string(26, '-') << "+"
+            << string(32, '-') << "+" << "\n";
 
-  std::cout << "|" << std::setw(11) << "" << "|"
-            << std::setw(18) << "" << "|"
-            << std::setw(26) << "" << "|"
-            << std::setw(26) << "" << "|"
-            << std::setw(32) << "" << "|" << "\n";
+    cout << "|" << setw(11) << "" << "|"
+            << setw(18) << "" << "|"
+            << setw(26) << "" << "|"
+            << setw(26) << "" << "|"
+            << setw(32) << "" << "|" << "\n";
 
-  std::cout << "|" << "Code symbol" << "|"
+    cout << "|" << "Code symbol" << "|"
             << "  Count in text   " << "|"
             << "   Probability in text    " << "|"
             << "     Length code word     " << "|"
             << "           Code word            " << "|" << "\n";
 
-  std::cout << "|" << std::setw(11) << "" << "|"
-            << std::setw(18) << "" << "|"
-            << std::setw(26) << "" << "|"
-            << std::setw(26) << "" << "|"
-            << std::setw(32) << "" << "|" << "\n";
+    cout << "|" << setw(11) << "" << "|"
+            << setw(18) << "" << "|"
+            << setw(26) << "" << "|"
+            << setw(26) << "" << "|"
+            << setw(32) << "" << "|" << "\n";
 
-  std::cout << "+" << std::string(11, '-') << "+"
-            << std::string(18, '-') << "+"
-            << std::string(26, '-') << "+"
-            << std::string(26, '-') << "+"
-            << std::string(32, '-') << "+" << "\n";
+    cout << "+" << string(11, '-') << "+"
+            << string(18, '-') << "+"
+            << string(26, '-') << "+"
+            << string(26, '-') << "+"
+            << string(32, '-') << "+" << "\n";
 
-  float entropy = 0;
-  float averageLength = 0;
+    float entropy = 0;
+    float averageLength = 0;
 
-  for (int i = 0; i < numSymbols; i++) {
-    entropy += code[i].probability * std::log2(code[i].probability);
+    for (int i = 0; i < numSymbols; i++) {
+    entropy += code[i].probability * log2(code[i].probability);
     averageLength += (float)code[i].lengthCW * code[i].probability;
-    std::cout << "|"
-              << std::setw(7) << (int)(unsigned char)code[i].symbol << std::setw(4) << "" << "|"  // ASCII код (int)(unsigned char)
-              << std::setw(15) << code[i].quantity << std::setw(3) << "" << "|"
-              << std::setw(23) << std::fixed << code[i].probability << std::setw(3) << "" << "|"
-              << std::setw(23) << code[i].lengthCW << std::setw(3) << "" << "|"
-              << std::setw(29) << code[i].codeword << std::setw(3) << "   |" << "\n";
+    cout << "|"
+                << setw(7) << (int)(unsigned char)code[i].symbol << setw(4) << "" << "|"  // ASCII код (int)(unsigned char)
+                << setw(15) << code[i].quantity << setw(3) << "" << "|"
+                << setw(23) << fixed << code[i].probability << setw(3) << "" << "|"
+                << setw(23) << code[i].lengthCW << setw(3) << "" << "|"
+                << setw(29) << code[i].codeword << setw(3) << "   |" << "\n";
   }
 
-  std::cout << "+" << std::string(11, '-') << "+"
-            << std::string(18, '-') << "+"
-            << std::string(26, '-') << "+"
-            << std::string(26, '-') << "+"
-            << std::string(32, '-') << "+" << "\n";
+    cout << "+" << string(11, '-') << "+"
+            << string(18, '-') << "+"
+            << string(26, '-') << "+"
+            << string(26, '-') << "+"
+            << string(32, '-') << "+" << "\n";
 
-  std::cout << "Entropy: " << -entropy << "\n";
-  std::cout << "Average length code word: " << averageLength << "\n";
+    cout << "Entropy: " << -entropy << "\n";
+    cout << "Average length code word: " << averageLength << "\n";
 }
 
 // Сортировка для кодировки (сортировка по убыванию вероятности)
@@ -411,45 +411,46 @@ void quickSortCoding(coding* A, int R, int L) {
     int i = L;
     int j = R;
     while (i <= j) {
-      while (A[i].probability > x)
-        i++;
-      while (A[j].probability < x)
-        j--;
+        while (A[i].probability > x) {
+            i++;
+        }
+        while (A[j].probability < x) {
+            j--;
+        }
+        if (i <= j) {
+            char tmp_ch;
+            tmp_ch = A[i].symbol;
+            A[i].symbol = A[j].symbol;
+            A[j].symbol = tmp_ch;
 
-      if (i <= j) {
-        char tmp_ch;
-        tmp_ch = A[i].symbol;
-        A[i].symbol = A[j].symbol;
-        A[j].symbol = tmp_ch;
+            unsigned int tmp_q;
+            tmp_q = A[i].quantity;
+            A[i].quantity = A[j].quantity;
+            A[j].quantity = tmp_q;
 
-        unsigned int tmp_q;
-        tmp_q = A[i].quantity;
-        A[i].quantity = A[j].quantity;
-        A[j].quantity = tmp_q;
-
-        float tmp_prop;
-        tmp_prop = A[i].probability;
-        A[i].probability = A[j].probability;
-        A[j].probability = tmp_prop;
-        i++;
-        j--;
-      }
+            float tmp_prop;
+            tmp_prop = A[i].probability;
+            A[i].probability = A[j].probability;
+            A[j].probability = tmp_prop;
+            i++;
+            j--;
+        }
     }
     if (j - L > R - i) {
-      quickSortCoding(A, R, i);
-      R = j;
+        quickSortCoding(A, R, i);
+        R = j;
     }
     else {
-      quickSortCoding(A, j, L);
-      L = i;
+        quickSortCoding(A, j, L);
+        L = i;
     }
-  }
+    }
 }
 
 //Находит медиану части массива P, т.е. такой индекс L <= m <= R, что минимальна величина
 int med(coding *code, int borderL, int borderR) {
-  float SumL = 0;
-  for (int i = borderL; i < borderR; i++)
+    float SumL = 0;
+    for (int i = borderL; i < borderR; i++)
     SumL = SumL + code[i].probability;
 
     float SumR = code[borderR].probability;
@@ -460,64 +461,68 @@ int med(coding *code, int borderL, int borderR) {
         SumL = SumL - code[m].probability;
         SumR = SumR + code[m].probability;
     }
-  return m;
+    return m;
 }
 
 void codeFano(coding * code, int borderL, int borderR, int k) {
-  //k - длина уже построенной части элементарных кодов
-  if (borderL < borderR) {
+    //k - длина уже построенной части элементарных кодов
+    if (borderL < borderR) {
     k = k + 1;
     int m = med(code, borderL, borderR);
     for (int i = borderL; i <= borderR; i++) {
-      if (code[i].codeword != nullptr) {
-        char *temp = new char[k + 1];
-        for(int j = 0; j < k - 1; j++)
-            temp[j] = code[i].codeword[j];
-        delete[] code[i].codeword;
-        code[i].codeword = temp;
-      }
-      else
-        code[i].codeword = new char[k + 1];
-
-      if (i <= m)
-        code[i].codeword[k - 1] = '0';
-      else
-        code[i].codeword[k - 1] = '1';
-
-      code[i].codeword[k] = '\0';
-      code[i].lengthCW = code[i].lengthCW+ 1;
+        if (code[i].codeword != nullptr) {
+            char *temp = new char[k + 1];
+            for(int j = 0; j < k - 1; j++)
+                temp[j] = code[i].codeword[j];
+            delete[] code[i].codeword;
+            code[i].codeword = temp;
+        }
+        else {
+            code[i].codeword = new char[k + 1];
+        }
+        if (i <= m) {
+            code[i].codeword[k - 1] = '0';
+        }
+        else {
+            code[i].codeword[k - 1] = '1';
+        }
+        code[i].codeword[k] = '\0';
+        code[i].lengthCW = code[i].lengthCW+ 1;
     }
     codeFano(code, borderL, m, k);
     codeFano(code, m + 1, borderR, k);
-  }
+    }
 }
 
 void tableSymbols(coding* &code, int &numsUnique) {
-  int windows866[256] = {0};
-  int totalNums = 0;
-  char ch;
+    int windows866[256] = {0};
+    int totalNums = 0;
+    char ch;
 
-  std::fstream file("testBase2.dat", std::ios::in | std::ios::binary);
+    fstream file("testBase2.dat", ios::in | ios::binary);
 
-  if (!(file.is_open())){
-    std::cerr << "Error: file testBase2.dat isn't found.";
-    exit(1);
-  }
+    if (!(file.is_open())){
+        cerr << "Error: file testBase2.dat isn't found.";
+        exit(1);
+    }
 
-  while (!file.read((char*)&ch, sizeof(ch)).eof()){
+    while (!file.read((char*)&ch, sizeof(ch)).eof()){
         totalNums++;
-        if (int(ch) < 0)
+        if (int(ch) < 0) {
             windows866[int(ch) + 256]++;
-        else
+        }
+        else {
             windows866[int(ch)]++;
-  }
-  file.close();
+        }
+    }
+    file.close();
 
-  for (int i = 0; i < 256; i++)
-    if (windows866[i] != 0 )
-        numsUnique++;
+    for (int i = 0; i < 256; i++) {
+        if (windows866[i] != 0 ) {
+            numsUnique++;
+        }
+    }
 
-//   code = new coding[numsUnique];
     code = new coding[numsUnique];
     for (int i = 0; i < numsUnique; i++) {
         code[i].codeword = nullptr; // Инициализация
@@ -526,10 +531,10 @@ void tableSymbols(coding* &code, int &numsUnique) {
     unsigned short int temp = 0;
     for (int i = 0; i < 256; i++) {
         if(windows866[i] != 0) {
-        code[temp].symbol = char(i);
-        code[temp].quantity = windows866[i];
-        code[temp].probability = (float)windows866[i] / (float)totalNums;
-        temp++;
+            code[temp].symbol = char(i);
+            code[temp].quantity = windows866[i];
+            code[temp].probability = (float)windows866[i] / (float)totalNums;
+            temp++;
         }
     }
 
@@ -640,7 +645,7 @@ int main() {
                 cin >> target;
                 list* foundRecords = binarySearchByBirthday(sortedDatabase, target);
                 vector<record> vec = linkedListToVector(foundRecords);
-                std::sort(vec.begin(), vec.end(), compareByDepartment);
+                sort(vec.begin(), vec.end(), compareByDepartment);
                 TreeNode* root = buildOptimalSearchTree(vec, 0, vec.size() - 1);
                 
                 if (foundRecords) {
@@ -708,8 +713,6 @@ int main() {
                                     cerr << "Error: Root of DOP isn't found." << endl;
                                     break;
                                 }
-
-
                             }
                             case 4: {
                                 if (root) {
@@ -723,6 +726,7 @@ int main() {
                             }
                             case 5: {
                                 freeList(foundRecords);
+                                freeTree(root);
                                 goto exitFoundRecords;
                             }
                             default: {
