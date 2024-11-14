@@ -387,7 +387,7 @@ void printTableSymbols(coding *code, int numSymbols) {
     entropy += code[i].probability * std::log2(code[i].probability);
     averageLength += (float)code[i].lengthCW * code[i].probability;
     std::cout << "|"
-              << std::setw(7) << (int)(unsigned char)code[i].symbol << std::setw(4) << "" << "|"  // ASCII код
+              << std::setw(7) << (int)(unsigned char)code[i].symbol << std::setw(4) << "" << "|"  // ASCII код (int)(unsigned char)
               << std::setw(15) << code[i].quantity << std::setw(3) << "" << "|"
               << std::setw(23) << std::fixed << code[i].probability << std::setw(3) << "" << "|"
               << std::setw(23) << code[i].lengthCW << std::setw(3) << "" << "|"
@@ -540,10 +540,10 @@ void tableSymbols(coding* &code, int &numsUnique) {
 void freeCoding(coding* code, int numSymbols) {
     if (code != nullptr) {
         for (int i = 0; i < numSymbols; i++) {
-            delete[] code[i].codeword; // Освобождаем память для каждого кодового слова
+            delete[] code[i].codeword;
         }
-        delete[] code; // Освобождаем массив структур
-        code = nullptr; // Обнуляем указатель
+        delete[] code;
+        code = nullptr;
     }
 }
 
