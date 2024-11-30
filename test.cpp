@@ -350,58 +350,65 @@ void printTreeWithTable(TreeNode* root) {
 }
 
 void printTableSymbols(coding *code, int numSymbols) {
+    // Вывод заголовка таблицы
     cout << "+" << string(11, '-') << "+"
-            << string(18, '-') << "+"
-            << string(26, '-') << "+"
-            << string(26, '-') << "+"
-            << string(32, '-') << "+" << "\n";
+         << string(18, '-') << "+"
+         << string(26, '-') << "+"
+         << string(26, '-') << "+"
+         << string(32, '-') << "+" << "\n";
 
     cout << "|" << setw(11) << "" << "|"
-            << setw(18) << "" << "|"
-            << setw(26) << "" << "|"
-            << setw(26) << "" << "|"
-            << setw(32) << "" << "|" << "\n";
+         << setw(18) << "" << "|"
+         << setw(26) << "" << "|"
+         << setw(26) << "" << "|"
+         << setw(32) << "" << "|" << "\n";
 
     cout << "|" << "Code symbol" << "|"
-            << "  Count in text   " << "|"
-            << "   Probability in text    " << "|"
-            << "     Length code word     " << "|"
-            << "           Code word            " << "|" << "\n";
+         << "  Count in text   " << "|"
+         << "   Probability in text    " << "|"
+         << "     Length code word     " << "|"
+         << "           Code word            " << "|" << "\n";
 
     cout << "|" << setw(11) << "" << "|"
-            << setw(18) << "" << "|"
-            << setw(26) << "" << "|"
-            << setw(26) << "" << "|"
-            << setw(32) << "" << "|" << "\n";
+         << setw(18) << "" << "|"
+         << setw(26) << "" << "|"
+         << setw(26) << "" << "|"
+         << setw(32) << "" << "|" << "\n";
 
     cout << "+" << string(11, '-') << "+"
-            << string(18, '-') << "+"
-            << string(26, '-') << "+"
-            << string(26, '-') << "+"
-            << string(32, '-') << "+" << "\n";
+         << string(18, '-') << "+"
+         << string(26, '-') << "+"
+         << string(26, '-') << "+"
+         << string(32, '-') << "+" << "\n";
 
     float entropy = 0;
     float averageLength = 0;
+    int totalSymbols = 0; // Новая переменная для подсчёта общего количества символов
 
+    // Вывод данных о символах
     for (int i = 0; i < numSymbols; i++) {
-    entropy += code[i].probability * log2(code[i].probability);
-    averageLength += (float)code[i].lengthCW * code[i].probability;
-    cout << "|"
-                << setw(7) << (int)(unsigned char)code[i].symbol << setw(4) << "" << "|"  // ASCII код (int)(unsigned char)
-                << setw(15) << code[i].quantity << setw(3) << "" << "|"
-                << setw(23) << fixed << code[i].probability << setw(3) << "" << "|"
-                << setw(23) << code[i].lengthCW << setw(3) << "" << "|"
-                << setw(29) << code[i].codeword << setw(3) << "   |" << "\n";
-  }
+        entropy += code[i].probability * log2(code[i].probability);
+        averageLength += (float)code[i].lengthCW * code[i].probability;
+        totalSymbols += code[i].quantity; // Суммируем количество символов
+
+        cout << "|"
+             << setw(7) << code[i].symbol << setw(4) << "" << "|"  // ASCII код (int)(unsigned char)
+             << setw(15) << code[i].quantity << setw(3) << "|"
+             << setw(23) << fixed << code[i].probability << setw(3) << "|"
+             << setw(23) << code[i].lengthCW << setw(3) << "|"
+             << setw(29) << code[i].codeword << setw(3) << "   |" << "\n";
+    }
 
     cout << "+" << string(11, '-') << "+"
-            << string(18, '-') << "+"
-            << string(26, '-') << "+"
-            << string(26, '-') << "+"
-            << string(32, '-') << "+" << "\n";
+         << string(18, '-') << "+"
+         << string(26, '-') << "+"
+         << string(26, '-') << "+"
+         << string(32, '-') << "+" << "\n";
 
+    // Вывод результатов
     cout << "Entropy: " << -entropy << "\n";
     cout << "Average length code word: " << averageLength << "\n";
+    cout << "Total number of symbols in database: " << numSymbols << "\n";
 }
 
 // Сортировка для кодировки (сортировка по убыванию вероятности)
