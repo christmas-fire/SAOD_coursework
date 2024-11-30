@@ -1,0 +1,26 @@
+[
+{
+  "directory": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/build",
+  "command": "C:\\MinGW\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\coursework.dir\\src\\coding.cpp.obj -c C:\\Users\\christmas_fire\\VScodeProjects\\SAOD_coursework\\src\\coding.cpp",
+  "file": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/src/coding.cpp",
+  "output": "CMakeFiles/coursework.dir/src/coding.cpp.obj"
+},
+{
+  "directory": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/build",
+  "command": "C:\\MinGW\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\coursework.dir\\src\\list.cpp.obj -c C:\\Users\\christmas_fire\\VScodeProjects\\SAOD_coursework\\src\\list.cpp",
+  "file": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/src/list.cpp",
+  "output": "CMakeFiles/coursework.dir/src/list.cpp.obj"
+},
+{
+  "directory": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/build",
+  "command": "C:\\MinGW\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\coursework.dir\\src\\main.cpp.obj -c C:\\Users\\christmas_fire\\VScodeProjects\\SAOD_coursework\\src\\main.cpp",
+  "file": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/src/main.cpp",
+  "output": "CMakeFiles/coursework.dir/src/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/build",
+  "command": "C:\\MinGW\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\coursework.dir\\src\\tree.cpp.obj -c C:\\Users\\christmas_fire\\VScodeProjects\\SAOD_coursework\\src\\tree.cpp",
+  "file": "C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/src/tree.cpp",
+  "output": "CMakeFiles/coursework.dir/src/tree.cpp.obj"
+}
+]

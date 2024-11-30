@@ -1,0 +1,3 @@
+C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/build/CMakeFiles/coursework.dir
+C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/build/CMakeFiles/edit_cache.dir
+C:/Users/christmas_fire/VScodeProjects/SAOD_coursework/build/CMakeFiles/rebuild_cache.dir
